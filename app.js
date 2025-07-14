@@ -120,9 +120,8 @@ const PORT = 4003;
 
 mongoose.connect(DB_PATH).then(()=>{
   console.log("mongoose connected");
-  app.listen(PORT, () => {
-    console.log(`Server running on address http://localhost:${PORT}`);
-  });
 }).catch(err=>{
   console.log(err);
-})
+});
+
+module.exports = app;

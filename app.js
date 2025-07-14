@@ -1,6 +1,6 @@
 require('dotenv').config();
 const DB_PATH=process.env.DB_PATH;
-console.log(DB_PATH);
+// console.log(DB_PATH);
 // Core Module
 const path = require("path");
 const session = require("express-session");
@@ -51,9 +51,8 @@ const multerOptions = {
   fileFilter, 
 }
 app.use(cors({
-  origin: ["https://homebookingappclient.onrender.com",
+  origin: [,
     "https://homebooking-client.vercel.app/",
-    "http://localhost:5173",
   ],
   credentials: true
 }));

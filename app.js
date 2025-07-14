@@ -77,6 +77,10 @@ app.use(session({
   //forces a session that is "uninitialized" to be saved to the store
   saveUninitialized:true,
   store: store, // by passing store ow it will store our sessins in db instead of memory
+  cookie: {
+    sameSite: 'none', // Required for cross-site cookies
+    secure: true      // Required for HTTPS
+  }
 }));
 
 

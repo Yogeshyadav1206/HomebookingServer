@@ -115,13 +115,12 @@ app.use("/host", (req, res, next) => {
 app.use("/host", hostRouter);
 app.use(errorcontroller.error);
 
-const PORT = 4003;
-
-
+const PORT = process.env.PORT || 4003;
 mongoose.connect(DB_PATH).then(()=>{
   console.log("mongoose connected");
+  app.listen(PORT, () => {
+    console.log(`Server running on address http://localhost:${PORT}`);
+  });
 }).catch(err=>{
   console.log(err);
-});
-
-module.exports = app;
+})

@@ -51,7 +51,7 @@ const multerOptions = {
   fileFilter, 
 }
 app.use(cors({
-  origin: [,
+  origin: [
     "https://homebooking-client.vercel.app/",
   ],
   credentials: true

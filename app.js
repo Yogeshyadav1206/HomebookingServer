@@ -21,7 +21,7 @@ const errorcontroller = require("./controllers/error");
 
 const app = express();
 app.use(express.json()); 
-
+app.set('trust proxy', 1);
 
 app.set("view engine", "ejs");
 app.set("views", "views");

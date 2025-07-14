@@ -51,7 +51,7 @@ const multerOptions = {
   fileFilter, 
 }
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://homebooking-client.vercel.app",
   credentials: true
 }));
 app.use(multer(multerOptions).single('photo')); // for handling multipart/form-data, which is used for file uploads

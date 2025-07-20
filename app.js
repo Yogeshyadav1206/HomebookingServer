@@ -23,8 +23,8 @@ const app = express();
 app.use(express.json()); 
 app.set('trust proxy', 1);
 
-app.set("view engine", "ejs");
-app.set("views", "views");
+app.set("view engine", "ejs");// this tells express when we call res.render i want to use ejs tempate 
+app.set("views", "views");// this tells that ejs files are located in views directory
 
 
 

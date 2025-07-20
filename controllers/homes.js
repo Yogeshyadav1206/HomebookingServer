@@ -27,21 +27,20 @@ exports.geteditHome = async (req, res, next) => {
 
 
 exports.posteditHome = async (req, res, next) => {
-  console.log(req.body);
-  // console.log("Home Registration successful for:", req.file);
+  // Only allow host to edit their own home
+  const hostId = req.session.user._id;
   const { _id, houseName, price, location, rating, description } = req.body;
   try {
-    const home = await Home.findById(_id);
+    //find the home from hoem id and humne har home detail me uske owner ki id set kr rkhi h so match that id with req.session.user._id and if match h to edit kr dege
+    const home = await Home.findOne({ _id, host: hostId });
     if (!home) {
-      return res.status(404).json({ success: false, message: "Home not found" });
+      return res.status(403).json({ success: false, message: "Not authorized to edit this home" });
     }
     home.houseName = houseName;
     home.price = price;
     home.location = location;
     home.rating = rating;
     home.description = description;
-    // post add home me to phtodena must h but yha pe agr edit kr rhe h photo to to hi dege and agr phto edit ki h to purani phto delete kr denge
-
     if (req.file) {
       fs.unlink(home.photo, (err) => {
         if (err) {
@@ -201,10 +200,14 @@ exports.getaddHome=(req,res,next)=> {
 
 
 exports.postaddHome = async (req, res, next) => {
+  // Get the current user's ID from the session
+  const hostId = req.session.user._id;
+  // console.log("Host ID:", hostId);
   // console.log("FILE:", req.file);
   try {
     const { houseName, price, location, rating, description } = req.body;
     const photo = req.file.path;
+    // Create new home with host field
     const home = new Home({
       houseName,
       price,
@@ -212,9 +215,12 @@ exports.postaddHome = async (req, res, next) => {
       rating,
       photo,
       description,
+      host: hostId, // Associate home with host
     });
     const savedHome = await home.save();
-    console.log("home saved");
+    // Add this new home id to user hostHomesList array 
+    await User.findByIdAndUpdate(hostId, { $push: { hostHomesList: savedHome._id } });
+    console.log("home saved and added to hostHomesList");
     res.status(201).json({
       message: "Home added successfully",
       home: savedHome,
@@ -229,7 +235,14 @@ exports.postaddHome = async (req, res, next) => {
 
 exports.gethosthomelist = async (req, res, next) => {
   try {
-    const registeredHomes = await Home.find();
+    const hostId = req.session.user._id;
+
+    // we can use populate method also like
+    // const host = await User.findById(hostId).populate("hostHomesList");
+    // const registeredHomes = host.hostHomesList;
+
+    const registeredHomes = await Home.find({ host: hostId });
+    // isse hum home ke andar jo host id store kr rkhi h use match kr rhe h  req.session.user._id isse taki jisne log in kr rkha h usi ke homes dikhe 
     res.status(200).json({
       registeredHomes,
       pageTitle: "Host Home List",
@@ -245,10 +258,16 @@ exports.gethosthomelist = async (req, res, next) => {
 
 exports.postremovefromhost = async (req, res, next) => {
   const homeId = req.body.id;
-  // console.log("Received request to remove home with ID:", homeId);
-
+  const hostId = req.session.user._id;
   try {
+    // Only allow host to delete their own home
+    const home = await Home.findOne({ _id: homeId, host: hostId });
+    if (!home) {
+      return res.status(403).json({ success: false, message: "Not authorized to delete this home" });
+    }
     await Home.findByIdAndDelete(homeId);
+    // Remove home ID from host's hostHomesList
+    await User.findByIdAndUpdate(hostId, { $pull: { hostHomesList: homeId } });
     res.status(200).json({
       success: true,
       message: "Home deleted successfully",

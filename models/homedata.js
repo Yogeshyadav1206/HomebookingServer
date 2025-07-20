@@ -6,7 +6,8 @@ const homeSchema = new mongoose.Schema({
   location: { type: String, required: true },
   rating: { type: Number, required: true },
   photo: { type: String },
-  description: { type: String }
+  description: { type: String },
+  host: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true } // Add host reference
 });
 
 // call mongoose.model to create a Home model from homeSchema and export that Home model and anyone can import and use it 
